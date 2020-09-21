@@ -10,6 +10,7 @@ export default class ListarVeiculos extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      veiculosPorMarca: [],
       veiculosUltimaSemana: [],
       qtdVeiculosNaoVendidos: '',
       veiculos: [],
@@ -30,6 +31,11 @@ export default class ListarVeiculos extends Component {
     await api.get('/veiculos/find?createdLastWeek=true').then(json => {
       const { data } = json;
       this.setState({ veiculosUltimaSemana: data });
+    });
+
+    await api.get('/veiculos/find?veiculosPorMarca=true').then(json => {
+      const { data } = json;
+      this.setState({ veiculosPorMarca: data });
     });
   }
 
@@ -65,7 +71,6 @@ export default class ListarVeiculos extends Component {
                 <Button onClick={() => this.handleDelete(veiculo.id)}>
                   <FaTrash color="purple" size={14} />
                 </Button>
-                <hr></hr>
               </div>
             </li>
           ))}
@@ -73,9 +78,18 @@ export default class ListarVeiculos extends Component {
         <Link to="/adicionar">
           <FaPlus size={24} />
         </Link>
+        <hr></hr>
         <h4>Veículos não vendidos: {this.state.qtdVeiculosNaoVendidos} </h4>
         <h4>Veículos por década: </h4>
-        <h4>Veículos por fabricante: </h4>
+        <List>
+          <h4>Veículos por fabricante: </h4>
+          {this.state.veiculosPorMarca.map(veiculosPorMarca => (
+            <li key={veiculosPorMarca.id}>
+              <span>{veiculosPorMarca.veiculo}</span>
+              <hr></hr>
+            </li>
+          ))}
+        </List>
         <List>
           <h4>Últimos registrados: </h4>
           {this.state.veiculosUltimaSemana.map(veiculosUltimaSemana => (
