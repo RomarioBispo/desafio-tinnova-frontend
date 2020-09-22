@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 
 import { Link } from 'react-router-dom';
-import api from '../../service/api';
 import { FaCar, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
-import { Container, List, Button, hr } from './styles';
+import { Container, List, Button } from './styles';
+import api from '../../service/api';
 
 export default class ListarVeiculos extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      veiculosPorAno: [],
       veiculosPorMarca: [],
       veiculosUltimaSemana: [],
       qtdVeiculosNaoVendidos: '',
@@ -33,15 +34,19 @@ export default class ListarVeiculos extends Component {
       this.setState({ veiculosUltimaSemana: data });
     });
 
-    await api.get('/veiculos/find?veiculosPorMarca=true').then(json => {
+    await api.get('/veiculos/find/marca').then(json => {
       const { data } = json;
       this.setState({ veiculosPorMarca: data });
+    });
+
+    await api.get('/veiculos/find/ano').then(json => {
+      const { data } = json;
+      this.setState({ veiculosPorAno: data });
     });
   }
 
   async handleDelete(id) {
     await api.delete('veiculos/' + id);
-    this.props.history.push('/');
   }
 
   async handleEdit(veiculo) {
@@ -80,12 +85,24 @@ export default class ListarVeiculos extends Component {
         </Link>
         <hr></hr>
         <h4>Veículos não vendidos: {this.state.qtdVeiculosNaoVendidos} </h4>
-        <h4>Veículos por década: </h4>
+        <List>
+          <h4>Veículos por Ano: </h4>
+          {this.state.veiculosPorAno.map(veiculosPorAno => (
+            <li key={veiculosPorAno.id}>
+              <span>
+                {veiculosPorAno.ano} : {veiculosPorAno.quantidadeVeiculos}
+              </span>
+              <hr></hr>
+            </li>
+          ))}
+        </List>
         <List>
           <h4>Veículos por fabricante: </h4>
           {this.state.veiculosPorMarca.map(veiculosPorMarca => (
             <li key={veiculosPorMarca.id}>
-              <span>{veiculosPorMarca.veiculo}</span>
+              <span>
+                {veiculosPorMarca.marca} : {veiculosPorMarca.quantidadeVeiculos}
+              </span>
               <hr></hr>
             </li>
           ))}

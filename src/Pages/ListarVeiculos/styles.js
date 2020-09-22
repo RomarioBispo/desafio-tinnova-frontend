@@ -37,6 +37,10 @@ export const List = styled.div`
     flex-direction: row;
     justify-content: space-between;
   }
+  span {
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+  }
 `;
 
 export const Button = styled.button`
